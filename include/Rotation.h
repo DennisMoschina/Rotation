@@ -20,7 +20,7 @@ class Rotation {
     RotationSensor sensor1;
     RotationSensor sensor2;
 
-    void (*didTurnCallback)();
+    std::function<void()> didTurnCallback;
 
     unsigned long firstTime;
     unsigned long nextTime;
@@ -37,7 +37,7 @@ class Rotation {
     void sensor1didRegister();
     void sensor2didRegister();
 
-    void setCallback(void (*didTurnCallbackUsr)()) {
+    void setCallback(std::function<void()> didTurnCallbackUsr) {
       didTurnCallback = didTurnCallbackUsr;
     }
 
