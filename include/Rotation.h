@@ -20,7 +20,7 @@ private:
     RotationSensor sensor1;
     RotationSensor sensor2;
 
-    void (*didTurnCallback)(void*);
+    void (*didTurnCallback)();
 
     unsigned long firstTime;
     unsigned long nextTime;
@@ -36,7 +36,7 @@ public:
     void sensor1didRegister();
     void sensor2didRegister();
 
-    void setCallback(void (*didTurnCallbackUsr)(void*)) {
+    void setCallback(void (*didTurnCallbackUsr)()) {
         didTurnCallback = didTurnCallbackUsr;
     }
 

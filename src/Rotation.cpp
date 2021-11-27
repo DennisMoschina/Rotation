@@ -71,7 +71,7 @@ void Rotation::didTurn() {
         rotationData.rpm = 60000 / diff;
     }
 
-    didTurnCallback(NULL);
+    didTurnCallback();
 }
 
 RotationData Rotation::getData() {
