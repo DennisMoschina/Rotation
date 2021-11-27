@@ -21,8 +21,8 @@ Rotation::Rotation(byte sensor1Pin, byte sensor2Pin):
 }
 
 void Rotation::init() {
-    attachInterrupt(digitalPinToInterrupt(sensor1.getPin()), [this] () { this->sensor1didRegister(); }, HIGH);
-    attachInterrupt(digitalPinToInterrupt(sensor2.getPin()), [this] () { this->sensor2didRegister(); }, HIGH);
+    attachInterrupt(digitalPinToInterrupt(sensor1.getPin()), outsideSensor1didRegister, HIGH);
+    attachInterrupt(digitalPinToInterrupt(sensor2.getPin()), outsideSensor2didRegister, HIGH);
 
     firstTime = 0;
     nextTime = 0;
