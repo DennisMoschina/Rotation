@@ -4,15 +4,21 @@
 #include <Arduino.h>
 
 class RotationSensor {
-  private:
+private:
     byte pin;
-
-  public:
-    RotationSensor(byte pin);
-    void init();
 
     bool expected;
     bool value;
+
+public:
+    RotationSensor(byte pin);
+    void init();
+
+    void setValue(bool value);
+    void expect(bool expect);
+
+    bool getValue();
+    bool isExpected();
 
     byte getPin();
 };

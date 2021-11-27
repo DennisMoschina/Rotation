@@ -3,10 +3,10 @@
 
 byte sensorPins[] = {2, 3};
 
-Rotation rotation(sensorPin[0], sensorPin[1]);
+Rotation rotation(sensorPins[0], sensorPins[1]);
 
 void didTurn() {
-  data turnData = rotation.getData();
+  RotationData turnData = rotation.getData();
   
   Serial.print("turns: ");
   Serial.println(turnData.turns);

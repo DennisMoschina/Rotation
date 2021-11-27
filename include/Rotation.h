@@ -4,44 +4,44 @@
 #include <Arduino.h>
 #include <RotationSensor.h>
 
-typedef struct {
-  int turns;
-  int rpm;
+typedef struct RotationData {
+    unsigned int turns;
+    unsigned int rpm;
 
-  void clear() {
-    turns = 0;
-    rpm = 0;
-  }
-}data;
+    void clear() {
+        turns = 0;
+        rpm = 0;
+    }
+};
 
 
 class Rotation {
-  private:
+private:
     RotationSensor sensor1;
     RotationSensor sensor2;
 
-    std::function<void()> didTurnCallback;
+    void (*didTurnCallback)(void*);
 
     unsigned long firstTime;
     unsigned long nextTime;
 
-    data rotationData;
+    RotationData rotationData;
 
     void didTurn();
 
-
-  public:
-    Rotation(byte sensor1Pin, byte sensor2Pin);
-    void init();
-
+protected:
     void sensor1didRegister();
     void sensor2didRegister();
 
-    void setCallback(std::function<void()> didTurnCallbackUsr) {
-      didTurnCallback = didTurnCallbackUsr;
+public:
+    Rotation(byte sensor1Pin, byte sensor2Pin);
+    void init();
+
+    void setCallback(void (*didTurnCallbackUsr)(void*)) {
+        didTurnCallback = didTurnCallbackUsr;
     }
 
-    data getData();
+    RotationData getData();
     void reset();
 };
 
