@@ -29,13 +29,12 @@ private:
 
     void didTurn();
 
-protected:
-    void sensor1didRegister();
-    void sensor2didRegister();
-
 public:
     Rotation(byte sensor1Pin, byte sensor2Pin);
     void init();
+
+    void sensor1didRegister();
+    void sensor2didRegister();
 
     void setCallback(void (*didTurnCallbackUsr)(void*)) {
         didTurnCallback = didTurnCallbackUsr;
