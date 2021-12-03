@@ -6,19 +6,20 @@ RotationSensor sensors[] = {RotationSensor(sensorPins[0]), RotationSensor(sensor
 
 Rotation rotation(&sensors[0], &sensors[1]);
 
-void didTurn() {
-    RotationData turnData = rotation.getData();
-  
-    Serial.print("turns: ");
-    Serial.println(turnData.turns);
-    Serial.print("rpm: ");
-    Serial.println(turnData.rpm);
-}
+class MyRotationCallback: public RotationCallback {
+public:
+    void didTurn(RotationData turnData) {
+        Serial.print("turns: ");
+        Serial.println(turnData.turns);
+        Serial.print("rpm: ");
+        Serial.println(turnData.rpm);
+    }
+};
 
 void setup() {
     Serial.begin(9600);
   
-    rotation.setCallback(didTurn);
+    rotation.setCallback(new MyRotationCallback());
 }
 
 void loop() {}

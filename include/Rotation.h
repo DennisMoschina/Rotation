@@ -2,17 +2,9 @@
 #define MY_ROTATION_H
 
 #include <Arduino.h>
-#include <RotationSensor.h>
-
-typedef struct RotationData {
-    unsigned int turns;
-    unsigned int rpm;
-
-    void clear() {
-        turns = 0;
-        rpm = 0;
-    }
-};
+#include "RotationSensor.h"
+#include "RotationData.h"
+#include "RotationCallback.h"
 
 
 class Rotation {
@@ -20,7 +12,7 @@ private:
     RotationSensor* sensor1;
     RotationSensor* sensor2;
 
-    void (*didTurnCallback)();
+    RotationCallback* callback;
 
     unsigned long firstTime;
     unsigned long nextTime;
@@ -36,9 +28,7 @@ public:
     void sensor1didRegister();
     void sensor2didRegister();
 
-    void setCallback(void (*didTurnCallbackUsr)()) {
-        didTurnCallback = didTurnCallbackUsr;
-    }
+    void setCallback(RotationCallback* callback);
 
     void handle();
 

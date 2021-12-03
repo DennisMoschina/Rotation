@@ -41,10 +41,10 @@ void Rotation::sensor2didRegister() {
 }
 
 void Rotation::didTurn() {
-    rotationData.turns += 1;
+    this->rotationData.turns += 1;
 
-    firstTime = nextTime;
-    nextTime = millis();
+    this->firstTime = nextTime;
+    this->nextTime = millis();
 
     this->sensor1->resetValue();
     this->sensor2->resetValue();
@@ -52,13 +52,18 @@ void Rotation::didTurn() {
     unsigned long diff = (nextTime - firstTime);
 
     if (diff == 0) {
-        rotationData.rpm = 0;
+        this->rotationData.rpm = 0;
     } else {
-        rotationData.rpm = 60000 / diff;
+        this->rotationData.rpm = 60000 / diff;
     }
 
-    didTurnCallback();
+    this->callback->didTurn(this->rotationData);
 }
+
+void Rotation::setCallback(RotationCallback* callback) {
+    this->callback = callback;
+}
+
 
 void Rotation::handle() {
     if (!sensor1->getValue()) {
