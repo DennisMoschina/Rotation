@@ -1,7 +1,8 @@
 #include <RotationSensor.h>
 
-RotationSensor::RotationSensor(byte pin) {
+RotationSensor::RotationSensor(byte pin, int threshold) {
     this->pin = pin;
+    this->threshold = threshold;
     init();
 }
 
@@ -10,8 +11,13 @@ void RotationSensor::init() {
     value = false;
 }
 
-void RotationSensor::setValue(bool value) {
-    this->value = value;
+bool RotationSensor::readValue() {
+    this->value = analogRead(this->pin) > threshold;
+    return this->value;
+}
+
+void RotationSensor::resetValue() {
+    this->value = false;
 }
 
 void RotationSensor::expect(bool expect) {

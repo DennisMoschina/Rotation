@@ -10,11 +10,15 @@ private:
     bool expected;
     bool value;
 
+    int threshold;
+
 public:
-    RotationSensor(byte pin);
+    RotationSensor(byte pin, int threshold = 2000);
     void init();
 
-    void setValue(bool value);
+    bool readValue();
+    void resetValue();
+
     void expect(bool expect);
 
     bool getValue();

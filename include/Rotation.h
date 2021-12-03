@@ -17,8 +17,8 @@ typedef struct RotationData {
 
 class Rotation {
 private:
-    RotationSensor sensor1;
-    RotationSensor sensor2;
+    RotationSensor* sensor1;
+    RotationSensor* sensor2;
 
     void (*didTurnCallback)();
 
@@ -30,8 +30,8 @@ private:
     void didTurn();
 
 public:
-    Rotation(byte sensor1Pin, byte sensor2Pin);
-    void init();
+    Rotation(RotationSensor* sensor1, RotationSensor* sensor2);
+    void begin();
 
     void sensor1didRegister();
     void sensor2didRegister();
@@ -39,6 +39,8 @@ public:
     void setCallback(void (*didTurnCallbackUsr)()) {
         didTurnCallback = didTurnCallbackUsr;
     }
+
+    void handle();
 
     RotationData getData();
     void reset();

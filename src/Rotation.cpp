@@ -1,28 +1,17 @@
 #include <Rotation.h>
 #include <RotationSensor.h>
 
-
-Rotation *pointerToClassRT;
-
-static void outsideSensor1didRegister() {
-  pointerToClassRT->sensor1didRegister();
+void handleRotation(void* rotation) {
+    for (;;) ((Rotation*) rotation)->handle();
 }
 
-static void outsideSensor2didRegister() {
-  pointerToClassRT->sensor2didRegister();
+Rotation::Rotation(RotationSensor* sensor1, RotationSensor* sensor2) {
+    this->sensor1 = sensor1;
+    this->sensor2 = sensor2;
 }
 
-
-Rotation::Rotation(byte sensor1Pin, byte sensor2Pin):
-    sensor1(RotationSensor(sensor1Pin)),
-    sensor2(RotationSensor(sensor2Pin)) {
-
-    init();
-}
-
-void Rotation::init() {
-    attachInterrupt(digitalPinToInterrupt(sensor1.getPin()), outsideSensor1didRegister, HIGH);
-    attachInterrupt(digitalPinToInterrupt(sensor2.getPin()), outsideSensor2didRegister, HIGH);
+void Rotation::begin() {
+    xTaskCreate(handleRotation, "handleRotation", 2000, this, 0, NULL);
 
     firstTime = 0;
     nextTime = 0;
@@ -32,28 +21,22 @@ void Rotation::init() {
 }
 
 void Rotation::sensor1didRegister() {
-    if (sensor1.isExpected()) {
-        if (sensor2.isExpected()) {
-            didTurn();
-            sensor2.setValue(false);
-        } else {
-            sensor1.setValue(true);
+    if (this->sensor1->isExpected()) {
+        this->sensor1->expect(false);
+        this->sensor2->expect(true);
+        if (sensor2->getValue()) {
+            this->didTurn();
         }
-        sensor2.expect(true);
-        sensor1.expect(false);
     }
 }
 
 void Rotation::sensor2didRegister() {
-    if (sensor2.isExpected()) {
-        if (sensor1.isExpected()) {
-            didTurn();
-            sensor1.setValue(false);
-        } else {
-            sensor2.setValue(true);
+    if (this->sensor2->isExpected()) {
+        this->sensor2->expect(false);
+        this->sensor1->expect(true);
+        if (sensor1->getValue()) {
+            this->didTurn();
         }
-        sensor2.expect(true);
-        sensor1.expect(false);
     }
 }
 
@@ -62,6 +45,9 @@ void Rotation::didTurn() {
 
     firstTime = nextTime;
     nextTime = millis();
+
+    this->sensor1->resetValue();
+    this->sensor2->resetValue();
 
     unsigned long diff = (nextTime - firstTime);
 
@@ -74,16 +60,25 @@ void Rotation::didTurn() {
     didTurnCallback();
 }
 
+void Rotation::handle() {
+    if (!sensor1->getValue()) {
+        if (sensor1->readValue()) this->sensor1didRegister();
+    }
+    if (!sensor2->getValue()) {
+        if (sensor2->readValue()) this->sensor2didRegister();
+    }
+}
+
 RotationData Rotation::getData() {
     return rotationData;
 }
 
 void Rotation::reset() {
-    sensor1.expect(true);
-    sensor2.expect(true);
+    sensor1->expect(true);
+    sensor2->expect(true);
 
-    sensor1.setValue(false);
-    sensor2.setValue(false);
+    sensor1->resetValue();
+    sensor2->resetValue();
 
     rotationData.clear();
 }

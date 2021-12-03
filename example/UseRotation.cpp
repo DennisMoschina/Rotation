@@ -2,8 +2,9 @@
 #include <Rotation.h>
 
 byte sensorPins[] = {2, 3};
+RotationSensor sensors[] = {RotationSensor(sensorPins[0]), RotationSensor(sensorPins[1])};
 
-Rotation rotation(sensorPins[0], sensorPins[1]);
+Rotation rotation(&sensors[0], &sensors[1]);
 
 void didTurn() {
     RotationData turnData = rotation.getData();
