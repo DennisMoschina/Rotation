@@ -22,6 +22,7 @@ void Rotation::begin() {
 
 void Rotation::sensor1didRegister() {
     if (this->sensor1->isExpected()) {
+        this->sensor1->setValue(true);
         this->sensor1->expect(false);
         this->sensor2->expect(true);
         if (sensor2->getValue()) {
@@ -32,6 +33,7 @@ void Rotation::sensor1didRegister() {
 
 void Rotation::sensor2didRegister() {
     if (this->sensor2->isExpected()) {
+        this->sensor2->setValue(true);
         this->sensor2->expect(false);
         this->sensor1->expect(true);
         if (sensor1->getValue()) {
@@ -46,8 +48,8 @@ void Rotation::didTurn() {
     this->firstTime = nextTime;
     this->nextTime = millis();
 
-    this->sensor1->resetValue();
-    this->sensor2->resetValue();
+    this->sensor1->setValue(false);
+    this->sensor2->setValue(false);
 
     unsigned long diff = (nextTime - firstTime);
 
@@ -82,8 +84,8 @@ void Rotation::reset() {
     sensor1->expect(true);
     sensor2->expect(true);
 
-    sensor1->resetValue();
-    sensor2->resetValue();
+    sensor1->setValue(false);
+    sensor2->setValue(false);
 
     rotationData.clear();
 }

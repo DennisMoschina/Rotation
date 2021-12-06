@@ -17,11 +17,10 @@ public:
     void init();
 
     bool readValue();
-    void resetValue();
+    void setValue(bool value);
+    bool getValue();
 
     void expect(bool expect);
-
-    bool getValue();
     bool isExpected();
 
     byte getPin();

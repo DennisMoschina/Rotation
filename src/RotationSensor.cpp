@@ -12,12 +12,12 @@ void RotationSensor::init() {
 }
 
 bool RotationSensor::readValue() {
-    this->value = analogRead(this->pin) > threshold;
-    return this->value;
+    boolean value = analogRead(this->pin) > this->threshold;
+    return value;
 }
 
-void RotationSensor::resetValue() {
-    this->value = false;
+void RotationSensor::setValue(bool value) {
+    this->value = value;
 }
 
 void RotationSensor::expect(bool expect) {
