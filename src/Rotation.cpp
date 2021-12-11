@@ -59,7 +59,7 @@ void Rotation::didTurn() {
         this->rotationData.rpm = 60000 / diff;
     }
 
-    this->callback->didTurn(this->rotationData);
+    if (this->callback != nullptr) this->callback->didTurn(this->rotationData);
 }
 
 void Rotation::setCallback(RotationCallback* callback) {

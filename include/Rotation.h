@@ -12,7 +12,7 @@ private:
     RotationSensor* sensor1;
     RotationSensor* sensor2;
 
-    RotationCallback* callback;
+    RotationCallback* callback = nullptr;
 
     unsigned long firstTime;
     unsigned long nextTime;
