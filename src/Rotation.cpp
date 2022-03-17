@@ -5,9 +5,9 @@ void handleRotation(void* rotation) {
     for (;;) ((Rotation*) rotation)->handle();
 }
 
-Rotation::Rotation(RotationSensor* sensor1, RotationSensor* sensor2) {
-    this->sensor1 = sensor1;
-    this->sensor2 = sensor2;
+Rotation::Rotation(RotationSensor** sensors, size_t sensorCount) {
+    this->sensors = sensors;
+    this->sensorCount = sensorCount;
 }
 
 void Rotation::begin() {
@@ -20,36 +20,25 @@ void Rotation::begin() {
     rotationData.turns = 0;
 }
 
-void Rotation::sensor1didRegister() {
-    if (this->sensor1->isExpected()) {
-        this->sensor1->setValue(true);
-        this->sensor1->expect(false);
-        this->sensor2->expect(true);
-        if (sensor2->getValue()) {
-            this->didTurn();
-        }
+///warning: - currently only works in one direction
+void Rotation::sensorDidRegister(size_t sensor) {
+    this->sensors[sensor]->expect(false);
+    this->sensors[(sensor + 1) % this->sensorCount]->expect(true);
+    for (size_t i = 0; i < this->sensorCount; i++) {
+        if (!this->sensors[i]->getValue()) return;
     }
-}
-
-void Rotation::sensor2didRegister() {
-    if (this->sensor2->isExpected()) {
-        this->sensor2->setValue(true);
-        this->sensor2->expect(false);
-        this->sensor1->expect(true);
-        if (sensor1->getValue()) {
-            this->didTurn();
-        }
-    }
+    this->didTurn();
 }
 
 void Rotation::didTurn() {
-    this->rotationData.turns += 1;
+    this->rotationData.turns++;
 
     this->firstTime = nextTime;
     this->nextTime = millis();
 
-    this->sensor1->setValue(false);
-    this->sensor2->setValue(false);
+    for (size_t i = 0; i < this->sensorCount; i++) {
+        this->sensors[i]->resetValue();
+    }
 
     unsigned long diff = (nextTime - firstTime);
 
@@ -68,11 +57,14 @@ void Rotation::setCallback(RotationCallback* callback) {
 
 
 void Rotation::handle() {
-    if (!sensor1->getValue()) {
-        if (sensor1->readValue()) this->sensor1didRegister();
-    }
-    if (!sensor2->getValue()) {
-        if (sensor2->readValue()) this->sensor2didRegister();
+    for (size_t i = 0; i < this->sensorCount; i++) {
+        RotationSensor* sensor = this->sensors[i];
+        if (sensor->isExpected()) {
+            if (sensor->readValue()) {
+                this->sensorDidRegister(i);
+                return;
+            }
+        }
     }
 }
 
@@ -81,11 +73,11 @@ RotationData Rotation::getData() {
 }
 
 void Rotation::reset() {
-    sensor1->expect(true);
-    sensor2->expect(true);
-
-    sensor1->setValue(false);
-    sensor2->setValue(false);
+    for (size_t i = 0; i < this->sensorCount; i++) {
+        RotationSensor* sensor = this->sensors[i];
+        sensor->expect(true);
+        sensor->resetValue();
+    }
 
     rotationData.clear();
 }

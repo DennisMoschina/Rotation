@@ -6,11 +6,10 @@
 #include "RotationData.h"
 #include "RotationCallback.h"
 
-
 class Rotation {
 private:
-    RotationSensor* sensor1;
-    RotationSensor* sensor2;
+    RotationSensor** sensors;
+    size_t sensorCount;
 
     RotationCallback* callback = nullptr;
 
@@ -22,11 +21,10 @@ private:
     void didTurn();
 
 public:
-    Rotation(RotationSensor* sensor1, RotationSensor* sensor2);
+    Rotation(RotationSensor** sensors, size_t sensorCount);
     void begin();
 
-    void sensor1didRegister();
-    void sensor2didRegister();
+    void sensorDidRegister(size_t sensor);
 
     void setCallback(RotationCallback* callback);
 

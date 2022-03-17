@@ -17,7 +17,7 @@ public:
     void init();
 
     bool readValue();
-    void setValue(bool value);
+    void resetValue();
     bool getValue();
 
     void expect(bool expect);

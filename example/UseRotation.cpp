@@ -1,10 +1,10 @@
 #include <Arduino.h>
 #include <Rotation.h>
 
-byte sensorPins[] = {2, 3};
-RotationSensor sensors[] = {RotationSensor(sensorPins[0]), RotationSensor(sensorPins[1])};
+byte sensorPins[] = {34, 35};
+RotationSensor* sensors[] = {new RotationSensor(sensorPins[0]), new RotationSensor(sensorPins[1])};
 
-Rotation rotation(&sensors[0], &sensors[1]);
+Rotation rotation(sensors, 2);
 
 class MyRotationCallback: public RotationCallback {
 public:
@@ -20,6 +20,9 @@ void setup() {
     Serial.begin(9600);
   
     rotation.setCallback(new MyRotationCallback());
+    rotation.begin();
 }
 
-void loop() {}
+void loop() {
+    delay(100);
+}
