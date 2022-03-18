@@ -5,19 +5,34 @@ void handleRotation(void* rotation) {
     for (;;) ((Rotation*) rotation)->handle();
 }
 
+void handleSingleSensorRotation(void* rotation) {
+    for (;;) ((Rotation*) rotation)->handleSingleSensor();
+}
+
 Rotation::Rotation(RotationSensor** sensors, size_t sensorCount) {
     this->sensors = sensors;
     this->sensorCount = sensorCount;
+
+    this->setFrequency(1000);
 }
 
 void Rotation::begin() {
-    xTaskCreate(handleRotation, "handleRotation", 2000, this, 0, NULL);
+    xTaskCreate(this->sensorCount > 1 ? handleRotation : handleSingleSensorRotation,
+                "handleRotation",
+                2000,
+                this,
+                3,
+                NULL);
 
     firstTime = 0;
     nextTime = 0;
 
     rotationData.rpm = 0;
     rotationData.turns = 0;
+}
+
+void Rotation::setFrequency(uint16_t frequency) {
+    this->delayTime = 1000 / frequency;
 }
 
 ///warning: - currently only works in one direction
@@ -55,6 +70,20 @@ void Rotation::setCallback(RotationCallback* callback) {
     this->callback = callback;
 }
 
+void Rotation::handleSingleSensor() {
+    RotationSensor* sensor = this->sensors[0];
+    if (sensor->readValue()) {
+        if (sensor->isExpected()) {
+            sensor->expect(false);
+            this->didTurn();
+        }
+    } else {
+        if (sensor->isExpected()) {
+            sensor->expect(true);
+        }
+    }
+    delay(this->delayTime);
+}
 
 void Rotation::handle() {
     for (size_t i = 0; i < this->sensorCount; i++) {
@@ -66,6 +95,7 @@ void Rotation::handle() {
             }
         }
     }
+    delay(this->delayTime);
 }
 
 RotationData Rotation::getData() {
