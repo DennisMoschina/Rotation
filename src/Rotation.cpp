@@ -78,7 +78,7 @@ void Rotation::handleSingleSensor() {
             this->didTurn();
         }
     } else {
-        if (sensor->isExpected()) {
+        if (!sensor->isExpected()) {
             sensor->expect(true);
         }
     }
